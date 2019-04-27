@@ -1,84 +1,91 @@
-import { StampDutyCalculator } from '../main/calculator';
+import { StampDutyBuilder, StampDutyCalculator } from '../main/calculator';
 
 describe('stamp duty calculator', function () {
 
     it('first home buyer with less with 500k purchase has no stamp duty fee', () => {
-        const stamp = new StampDutyCalculator(
-            500000, false, false, true, false
-        );
+        const stamp: StampDutyCalculator = StampDutyBuilder.newBuilder()
+            .withPurchasePrice(500000).build()
         const payable = stamp.calculate();
         expect(payable).toBe(0.0);
     });
 
     it('first land buyer up to 350k purchase has no stamp duty fee', () => {
-        const stamp = new StampDutyCalculator(
-            350000, true, false, true, false
-        );
+        const stamp = StampDutyBuilder.newBuilder()
+            .withPurchasePrice(350000)
+            .withLand()
+            .build();
         const payable = stamp.calculate();
         expect(payable).toBe(0.0);
     });
 
     it('land buyer with 400k purchase', () => {
-        const stamp = new StampDutyCalculator(
-            410000, true, false, true, false
-        );
+        const stamp = StampDutyBuilder.newBuilder().withPurchasePrice(410000).withLand().build();
         const payable = stamp.calculate();
         expect(payable).toBeCloseTo(9444.0);
     });
 
     it('land buyer with 400k purchase', () => {
-        const stamp = new StampDutyCalculator(
-            400000, true, false, false, false
-        );
+        const stamp = StampDutyBuilder.newBuilder()
+            .withPurchasePrice(400000)
+            .withLand()
+            .withNonFirstHomeBuyer()
+            .build();
         const payable = stamp.calculate();
         expect(payable).toBe(13490.0);
     });
 
     it('first land buyer with 500k purchase', () => {
-        const stamp = new StampDutyCalculator(
-            500000, true, false, true, false
-        );
+        const stamp = StampDutyBuilder.newBuilder()
+            .withPurchasePrice(500000).withLand().withFirstHomeBuyer().build();
         const payable = stamp.calculate();
         expect(payable).toBe(17990.0);
     });
 
     it("established home purchase for 350k for non-first home buyer as primary residence",
         () => {
-            const stamp = new StampDutyCalculator(
-                350000, false, false, false, false
-            );
+            const stamp = StampDutyBuilder.newBuilder().withPurchasePrice(350000)
+                .withNonFirstHomeBuyer().build();
             const payable = stamp.calculate();
             expect(payable).toBe(11240.0);
         });
 
     it("first home buyer buying 1m property as primary residence", () => {
-        const stamp = new StampDutyCalculator(
-            1000000, false, false, true, false
-        );
+        const stamp = StampDutyBuilder.newBuilder().withPurchasePrice(1000000)
+            .withFirstHomeBuyer().build();
         const payable = stamp.calculate();
         expect(payable).toBe(40490.0);
     });
 
     it("first home buyer buying 2m property as primary residence", () => {
-        const stamp = new StampDutyCalculator(
-            2000000, false, false, true, false
-        );
+        const stamp = StampDutyBuilder.newBuilder().withPurchasePrice(2000000)
+            .withFirstHomeBuyer().build();
         const payable = stamp.calculate();
         expect(payable).toBe(95490.0);
     });
 
     it("700k house for non first home-buyer", () => {
-        const stamp = new StampDutyCalculator(
-            700000, false, false, false, false
-        );
+        const stamp = StampDutyBuilder.newBuilder().withPurchasePrice(700000)
+            .withNonFirstHomeBuyer()
+            .build();
+
         const payable = stamp.calculate();
         expect(payable).toBe(26990.0);
     });
 
+    it("700k house for foreign buyer", () => {
+        const stamp = StampDutyBuilder.newBuilder().withPurchasePrice(700000)
+            .withFirstHomeBuyer()
+            .withForeignPurchase()
+            .build();
+
+        const payable = stamp.calculate();
+        expect(payable).toBe(82990.00);
+    });
+
     it("700k house for first home-buyer", () => {
-        const stamp = new StampDutyCalculator(
-            700000, false, false, true, false
-        );
+        const stamp = StampDutyBuilder.newBuilder().withPurchasePrice(700000)
+            .withFirstHomeBuyer()
+            .build();
         const payable = stamp.calculate();
         expect(payable).toBe(10490.0);
     });
@@ -101,8 +108,10 @@ describe('stamp duty calculator', function () {
             new ThresholdDuty(3000100, 150497.0),
         ];
         prices.forEach(price => {
-            const stamp = new StampDutyCalculator(price.threshold,
-                false, false, true, false);
+            const stamp = StampDutyBuilder.newBuilder()
+                .withPurchasePrice(price.threshold)
+                .withFirstHomeBuyer()
+                .build();
             const payable = stamp.calculate();
             expect(payable).toBeCloseTo(price.fee, 2, "input " + price.threshold + " expected: " + price.fee + ", actual: " + payable);
         })
@@ -125,8 +134,10 @@ describe('stamp duty calculator', function () {
             new ThresholdDuty(3000100, 150497.0),
         ];
         prices.forEach(price => {
-            const stamp = new StampDutyCalculator(price.threshold,
-                false, false, false, true);
+            const stamp = StampDutyBuilder.newBuilder().withPurchasePrice(price.threshold)
+                .withNonFirstHomeBuyer()
+                .withInvestment()
+                .build();
             const payable = stamp.calculate();
             expect(payable).toBeCloseTo(price.fee, 2, "input " + price.threshold + " expected: " + price.fee + ", actual: " + payable);
         })
