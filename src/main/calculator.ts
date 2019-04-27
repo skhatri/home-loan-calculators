@@ -89,7 +89,11 @@ module StampDuty {
         private first_home_buyer: boolean = true
         private land: boolean = false
         private investment: boolean = false
-
+        private state: State = States.NSW
+        withState(state: State) {
+            this.state = state
+            return this
+        }
         withPurchasePrice(purchase_price: number) {
             this.purchase_price = purchase_price
             return this
@@ -115,9 +119,36 @@ module StampDuty {
             return this
         }
         build() {
-            return new NSWStampDutyCalculator(this.purchase_price, this.land, this.foreign_purchase, this.first_home_buyer,
-                this.investment)
+            switch (this.state) {
+                case States.NSW:
+                    return new NSWStampDutyCalculator(this.purchase_price, this.land, this.foreign_purchase, this.first_home_buyer,
+                        this.investment)
+                    break;
+                default:
+                    throw new Error("Unimplemented for state " + this.state.toString());
+            }
         }
+    }
+
+    class State {
+        private name: string
+        constructor(name: string) {
+            this.name = name;
+        }
+        toString() {
+            return this.name
+        }
+    }
+
+    export class States {
+        static NSW = new State("nsw");
+        static ACT = new State("act");
+        static VIC = new State("vic");
+        static QLD = new State("qld");
+        static TAS = new State("tas");
+        static SA = new State("sa");
+        static NT = new State("nt");
+        static WA = new State("wa");
     }
 
     export class Factory {
@@ -128,4 +159,5 @@ module StampDuty {
 }
 
 
-export const StampDutyBuilder = new StampDuty.Factory()
+export const StampDutyBuilder = new StampDuty.Factory();
+export const States = StampDuty.States;

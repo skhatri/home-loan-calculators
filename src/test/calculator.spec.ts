@@ -1,4 +1,4 @@
-import { StampDutyBuilder, StampDutyCalculator } from '../main/calculator';
+import { StampDutyBuilder, StampDutyCalculator, States } from '../main/calculator';
 
 describe('stamp duty calculator', function () {
 
@@ -134,13 +134,20 @@ describe('stamp duty calculator', function () {
             new ThresholdDuty(3000100, 150497.0),
         ];
         prices.forEach(price => {
-            const stamp = StampDutyBuilder.newBuilder().withPurchasePrice(price.threshold)
+            const stamp = StampDutyBuilder.newBuilder()
+                .withState(States.NSW)
+                .withPurchasePrice(price.threshold)
                 .withNonFirstHomeBuyer()
                 .withInvestment()
                 .build();
             const payable = stamp.calculate();
             expect(payable).toBeCloseTo(price.fee, 2, "input " + price.threshold + " expected: " + price.fee + ", actual: " + payable);
         })
+    });
+
+    it("unimplemented states throw exception", () => {
+        expect(() => { StampDutyBuilder.newBuilder().withState(States.ACT).build() })
+            .toThrow();
     });
 });
 
