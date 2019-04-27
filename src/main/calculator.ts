@@ -89,7 +89,7 @@ module StampDuty {
         private first_home_buyer: boolean = true
         private land: boolean = false
         private investment: boolean = false
-        private state: State = States.NSW
+        private state: State = State.NSW
         withState(state: State) {
             this.state = state
             return this
@@ -118,37 +118,33 @@ module StampDuty {
             this.investment = true
             return this
         }
-        build() {
+        build(): StampDutyCalculator {
+            let stampDutyCalculator: StampDutyCalculator | undefined
+
             switch (this.state) {
-                case States.NSW:
-                    return new NSWStampDutyCalculator(this.purchase_price, this.land, this.foreign_purchase, this.first_home_buyer,
+                case State.NSW:
+                    stampDutyCalculator = new NSWStampDutyCalculator(this.purchase_price, this.land, this.foreign_purchase, this.first_home_buyer,
                         this.investment)
                     break;
                 default:
-                    throw new Error("Unimplemented for state " + this.state.toString());
+                    stampDutyCalculator = undefined
             }
+            if (!stampDutyCalculator) {
+                throw new Error("Unimplemented for state " + this.state.toString());
+            }
+            return stampDutyCalculator!
         }
     }
 
-    class State {
-        private name: string
-        constructor(name: string) {
-            this.name = name;
-        }
-        toString() {
-            return this.name
-        }
-    }
-
-    export class States {
-        static NSW = new State("nsw");
-        static ACT = new State("act");
-        static VIC = new State("vic");
-        static QLD = new State("qld");
-        static TAS = new State("tas");
-        static SA = new State("sa");
-        static NT = new State("nt");
-        static WA = new State("wa");
+    export enum State {
+        NSW,
+        ACT,
+        VIC,
+        QLD,
+        TAS,
+        SA,
+        NT,
+        WA,
     }
 
     export class Factory {
@@ -160,4 +156,4 @@ module StampDuty {
 
 
 export const StampDutyBuilder = new StampDuty.Factory();
-export const States = StampDuty.States;
+export const State = StampDuty.State;

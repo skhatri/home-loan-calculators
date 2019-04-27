@@ -1,4 +1,4 @@
-import { StampDutyBuilder, StampDutyCalculator, States } from '../main/calculator';
+import { StampDutyBuilder, StampDutyCalculator, State } from '../main/calculator';
 
 describe('stamp duty calculator', function () {
 
@@ -135,7 +135,7 @@ describe('stamp duty calculator', function () {
         ];
         prices.forEach(price => {
             const stamp = StampDutyBuilder.newBuilder()
-                .withState(States.NSW)
+                .withState(State.NSW)
                 .withPurchasePrice(price.threshold)
                 .withNonFirstHomeBuyer()
                 .withInvestment()
@@ -146,7 +146,7 @@ describe('stamp duty calculator', function () {
     });
 
     it("unimplemented states throw exception", () => {
-        expect(() => { StampDutyBuilder.newBuilder().withState(States.ACT).build() })
+        expect(() => { StampDutyBuilder.newBuilder().withState(State.ACT).build() })
             .toThrow();
     });
 });
