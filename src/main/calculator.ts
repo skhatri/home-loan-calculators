@@ -1,4 +1,4 @@
-import { ThresholdBaseDuty, Thresholds } from "./thresholdfee";
+import { Thresholds } from "./thresholdfee";
 
 /*
 Stamp Duty Calculator
@@ -8,6 +8,18 @@ export interface StampDutyCalculator {
     calculate(): number
 }
 module StampDuty {
+
+    export enum StateDef {
+        NSW,
+        ACT,
+        VIC,
+        QLD,
+        TAS,
+        SA,
+        NT,
+        WA,
+    }
+
     class NSWStampDutyCalculator implements StampDutyCalculator {
         private purchase_price: number
         private foreign_purchase: boolean
@@ -89,8 +101,8 @@ module StampDuty {
         private first_home_buyer: boolean = true
         private land: boolean = false
         private investment: boolean = false
-        private state: State = State.NSW
-        withState(state: State) {
+        private state: StateDef = StateDef.NSW
+        withState(state: StateDef) {
             this.state = state
             return this
         }
@@ -122,29 +134,21 @@ module StampDuty {
             let stampDutyCalculator: StampDutyCalculator | undefined
 
             switch (this.state) {
-                case State.NSW:
+                case StateDef.NSW:
                     stampDutyCalculator = new NSWStampDutyCalculator(this.purchase_price, this.land, this.foreign_purchase, this.first_home_buyer,
                         this.investment)
+                    break;
+                case StateDef.VIC:
+                    stampDutyCalculator = undefined
                     break;
                 default:
                     stampDutyCalculator = undefined
             }
-            if (!stampDutyCalculator) {
+            if (stampDutyCalculator === undefined) {
                 throw new Error("Unimplemented for state " + this.state.toString());
             }
-            return stampDutyCalculator!
+            return stampDutyCalculator
         }
-    }
-
-    export enum State {
-        NSW,
-        ACT,
-        VIC,
-        QLD,
-        TAS,
-        SA,
-        NT,
-        WA,
     }
 
     export class Factory {
@@ -156,4 +160,4 @@ module StampDuty {
 
 
 export const StampDutyBuilder = new StampDuty.Factory();
-export const State = StampDuty.State;
+export const State = StampDuty.StateDef;

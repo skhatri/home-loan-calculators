@@ -149,6 +149,12 @@ describe('stamp duty calculator', function () {
         expect(() => { StampDutyBuilder.newBuilder().withState(State.ACT).build() })
             .toThrow();
     });
+
+    it("unimplemented state VIC throw exception", () => {
+        expect(() => { StampDutyBuilder.newBuilder().withState(State.VIC).build() })
+            .toThrow();
+    });
+
 });
 
 class ThresholdDuty {

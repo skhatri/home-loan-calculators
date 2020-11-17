@@ -11,14 +11,14 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
-        "@types/jasmine": "^3.3.12",
-        "@types/jest": "^24.0.6",
-        "jasmine": "^3.4.0",
-        "jasmine-ts": "^0.3.0",
-        "jest": "^24.1.0",
-        "nyc": "^14.0.0",
-        "ts-jest": "^24.0.0",
-        "ts-node": "^8.1.0",
-        "typescript": "^3.4.5"
+        "@types/jasmine": "*",
+        "@types/jest": "*",
+        "jasmine": "*",
+        "jasmine-ts": "*",
+        "jest": "*",
+        "nyc": "*",
+        "ts-jest": "*",
+        "ts-node": "*",
+        "typescript": "*"
     }
 }
