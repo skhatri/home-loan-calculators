@@ -1,3 +1,5 @@
+![Build](https://github.com/skhatri/home-loan-calculators/actions/workflows/build.yml/badge.svg)
+
 # home-loan-calculators
 Home Loan Calculators - Australia
 
